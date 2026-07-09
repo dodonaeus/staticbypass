@@ -5,6 +5,14 @@
 python3 generator.py --obfuscator Base64Encode --transformers XOREncrypt,AESEncrypt --shellcode ./shellcode.bin --template processhollow --language cs
 ```
 
+## WIP
+- Adding more obfuscator support for the different programming languages
+- Removing pywin32 as a dependency for generating word documents
+- Adding pre and post compile obfuscations e.g. vba and powershell obfuscation
+- Adding more language support e.g. rust and go
+- Adding more templates e.g. early bird apc injection, heap allocation
+- Fleshing out help menu
+
 ## Requirements
 ### Windows
 - C# - csc.exe
