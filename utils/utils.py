@@ -49,3 +49,9 @@ def bytes_to_ps1(bytestring, name):
 
 def str_to_ps1(string, name):
     return f'[String]${name} = "{string}"'
+
+def dict_to_ps1(dictionary, name):
+    outString = f'${name} = @{{'
+    outString += ';'.join([f'"{key}"={value}' for key, value in dictionary.items()])
+    outString += '}'
+    return outString

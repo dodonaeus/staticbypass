@@ -21,10 +21,10 @@ function {name} {{
     [OutputType([byte[]])]
     param(
         [Parameter(Mandatory, ValueFromPipeline)]
-        [string]$Ciphertext
+        [string]$Encoded
     )
     process {{
-        [byte[]]$bytes = [System.Convert]::FromBase64String($Ciphertext)
+        [byte[]]$bytes = [System.Convert]::FromBase64String($Encoded)
         return $bytes
     }}
 }}
