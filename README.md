@@ -7,18 +7,16 @@ python3 staticbypass.py --obfuscator Base64Encode --transformers XOREncrypt,AESE
 
 ## WIP
 - Adding more obfuscator support for the different programming languages
-- Removing pywin32 as a dependency for generating word documents
 - Adding pre and post compile obfuscations e.g. vba and powershell obfuscation
 - Adding more language support e.g. rust and go
 - Adding more templates e.g. early bird apc injection, heap allocation
-- Fleshing out help menu
+- Dynamically building help text
 - Refactor code a little bit
 
 ## Requirements
 ### Windows
 - C# - csc.exe
 - C - mingw64
-- vba - pywin32
 
 ### Linux
 - C# - mcs
