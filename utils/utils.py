@@ -35,9 +35,9 @@ def str_to_vba(string, name):
 
     returnString = f'Dim {name} as String: '
     returnString += f'{name} = '
-    for i in range(0, len(string), 100):
-        substring = string[i:i+100]
-        if len(substring) < 100:
+    for i in range(0, len(string), 900):
+        substring = string[i:i+900]
+        if len(substring) < 900:
             returnString += f'"{substring}"\n'
         else:
             returnString += f'"{substring}" & _\n'
