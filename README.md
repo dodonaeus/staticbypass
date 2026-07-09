@@ -29,7 +29,7 @@ python3 staticbypass.py --obfuscator Base64Encode --transformers XOREncrypt,AESE
 |:-------------:|:---:|:--:|:----------:|:---:|
 | AESEncrypt    | ✅ | ✅ | ✅ | ❌ |
 | XOREncrypt    | ✅ | ✅ | ✅ | ✅ |
-| RC4Encrypt    | ✅ | ✅ | ❌ | ❌ |
+| RC4Encrypt    | ✅ | ✅ | ✅ | ❌ |
 | RSAEncrypt    | ❌ | ✅ | ❌ | ❌ |
 | Base64Encode  | ✅ | ✅ | ✅ | ✅ |
 | DictObfuscate | ✅ | ✅ | ✅ | ❌ |
