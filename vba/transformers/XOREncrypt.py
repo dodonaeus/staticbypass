@@ -18,7 +18,7 @@ class XOREncrypt:
 
     def codeblock(self):
         return """
-Function {name}(ciphertext As Variant) As Byte()
+Function {name}(ciphertext() As Byte) As Byte()
     Dim i As Long, n as Long
     {key}
     Dim plaintext() as Byte

