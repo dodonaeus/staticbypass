@@ -12,6 +12,7 @@ python3 generator.py --obfuscator Base64Encode --transformers XOREncrypt,AESEncr
 - Adding more language support e.g. rust and go
 - Adding more templates e.g. early bird apc injection, heap allocation
 - Fleshing out help menu
+- Refactor code a little bit
 
 ## Requirements
 ### Windows
