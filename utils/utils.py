@@ -1,0 +1,51 @@
+
+
+def bytes_to_cs(bytestring, name):
+    return f'byte[] {name} = new byte [{len(bytestring)}] {{' + ','.join([f'{hex(val)}' for val in bytestring]) + '};'
+
+def str_to_cs(string, name):
+    return f'string {name} = "{string}";'
+    
+def list_to_cs(itemList, name):
+    encodedString = ",".join([f'"{x}"' for x in itemList])
+    return f'string[] {name} = {{ {encodedString} }};'
+
+def bytes_to_c(bytestring, name):
+    return f'unsigned char {name}[] = ' + '{' + ','.join([f'{hex(val)}' for val in bytestring]) + '};'
+
+def str_to_c(string, name):
+    return f'unsigned char {name}[] = "{string + '\\0'}";'
+
+def list_to_c(itemList, name):
+    encodedString = ",".join([f'"{x}"' for x in itemList])
+    return f'unsigned char *{name}[] = {{{encodedString}}};'
+
+def bytes_to_vba(bytestring, name):
+    arrayString = f'{name} = Array('
+    for i in range(0, len(bytestring), 100):
+        subset = bytestring[i:i+100]
+        if len(subset) < 100:
+            arrayString += f'{','.join([f'{subset[i]}' for i in range(0, len(subset))])})\n'
+        else:
+            arrayString += f'{','.join([f'{subset[i]}' for i in range(0, 100)])}, _\n'
+
+    return arrayString
+
+def str_to_vba(string, name):
+
+    returnString = f'Dim {name} as String: '
+    returnString += f'{name} = '
+    for i in range(0, len(string), 100):
+        substring = string[i:i+100]
+        if len(substring) < 100:
+            returnString += f'"{substring}"\n'
+        else:
+            returnString += f'"{substring}" & _\n'
+
+    return returnString
+
+def bytes_to_ps1(bytestring, name):
+    return f'[Byte[]]${name} = {','.join([f'0x{bytestring[i]:02x}' for i in range(0, len(bytestring))])}'
+
+def str_to_ps1(string, name):
+    return f'[String]${name} = "{string}"'

