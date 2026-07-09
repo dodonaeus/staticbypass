@@ -6,6 +6,7 @@ from utils.utils import *
 import sys
 import os
 import subprocess
+import codecs
 
 try:
     import win32com.client
@@ -91,10 +92,16 @@ def main():
     imports = '\n'.join(list(dict.fromkeys(imports)))
 
     # Write template to temporary file for compilation
-    with open(f'{args.output}.{args.language}', 'w') as f:
-        print(f'Writing source code to {args.output}.{args.language}')
-        formattedCode = templateCode.format(imports=imports, shellcode=shellcode, codeblocks=codeblocks, transformers=transformers, shellcodeSize=shellcodeSize)
-        f.write(formattedCode)
+    print(f'Writing source code to {args.output}.{args.language}')
+
+    # Using emoji encode on a ps1 requires the utf-8 signature to be included in the file
+    if args.language == 'ps1' and args.obfuscator == 'EmojiEncode':
+        f = codecs.open(f'{args.output}.{args.language}', 'w', 'utf-8-sig')
+    else:
+        f = open(f'{args.output}.{args.language}', 'w')
+    formattedCode = templateCode.format(imports=imports, shellcode=shellcode, codeblocks=codeblocks, transformers=transformers, shellcodeSize=shellcodeSize)
+    f.write(formattedCode)
+    f.close()
 
     # Compile file
     if args.language == 'c':

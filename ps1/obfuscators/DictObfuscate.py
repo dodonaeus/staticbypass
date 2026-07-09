@@ -17,7 +17,7 @@ class DictObfuscate:
 
 
     def imports(self):
-        return ["#include <string.h>"]
+        return []
 
     def compilerOptions(self):
         return []
