@@ -19,8 +19,8 @@ class AESEncrypt:
         return []
 
     def codeblock(self):
-        return """
-function {name} {{
+        return f"""
+function {self.name} {{
     [CmdletBinding()]
     [OutputType([byte[]])]
     param(
@@ -41,8 +41,8 @@ function {name} {{
     }}
     end {{
         $cipher = $buffer.ToArray()
-        {key}
-        {iv}
+        {bytes_to_ps1(self.key, 'Key')}
+        {bytes_to_ps1(self.iv, 'IV')}
 
         $aes = [System.Security.Cryptography.Aes]::Create()
         $aes.Key     = $Key
@@ -51,10 +51,10 @@ function {name} {{
         $aes.IV = $IV
 
         $decryptor = $aes.CreateDecryptor()
-        return $decryptor.TransformFinalBlock($cipher, 0, $cipher.Length)
+        return $decryptor.TransformFinalBlock($cipher, 0, {self.ciphertextSize})
     }}
 }}
-""".format(name = self.name, key=bytes_to_ps1(self.key, 'Key'), iv=bytes_to_ps1(self.iv, 'IV'))
+"""
 
     def encode(self, plaintext):
         cipher = AES.new(self.key, AES.MODE_CBC, self.iv)

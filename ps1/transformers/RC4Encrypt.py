@@ -33,33 +33,33 @@ function {name} {{
     }}
     end {{
 
+        $ciphertext = $buffer.ToArray()
+
         {key}
-        [byte[]]$S = 0..255
-        [int]$j = 0
-        for ([int]$i = 0; $i -lt 256; $i++) {{
-            $j = ($j + $S[$i] + $Key[$i % $Key.Length]) % 256
-            $temp = $S[$i]
-            $S[$i] = $S[$j]
-            $S[$j] = $temp
+        # --- Key Scheduling Algorithm (KSA) ---
+        $S = New-Object 'byte[]' 256
+        for ($i = 0; $i -lt 256; $i++) {{
+            $S[$i] = $i
         }}
 
-        [byte[]]$Output = New-Object byte[] $CipherBytes.Length
-        [int]$i = 0
-        [int]$j = 0
-        for ([int]$k = 0; $k -lt $CipherBytes.Length; $k++) {{
+        $j = 0
+        for ($i = 0; $i -lt 256; $i++) {{
+            $j = ($j + $S[$i] + $Key[$i % $Key.Length]) % 256
+            $S[$i], $S[$j] = $S[$j], $S[$i]      # swap
+        }}
+
+        $out = [System.Array]::CreateInstance([byte],$ciphertext.Length)
+        $i = 0
+        $j = 0
+        for ($n = 0; $n -lt $ciphertext.Length; $n++) {{
             $i = ($i + 1) % 256
             $j = ($j + $S[$i]) % 256
-            
-            # Swap values
-            $temp = $S[$i]
-            $S[$i] = $S[$j]
-            $S[$j] = $temp
-
-            $t = ($S[$i] + $S[$j]) % 256
-            $Output[$k] = $CipherBytes[$k] -bxor $S[$t]
+            $S[$i], $S[$j] = $S[$j], $S[$i]      # swap
+            $k = $S[($S[$i] + $S[$j]) % 256]
+            $out[$n] = $ciphertext[$n] -bxor $k
         }}
 
-        return $Output
+        return ,$out
 
     }}
 }}
@@ -71,4 +71,4 @@ function {name} {{
         return cipher.encrypt(plaintext)
 
     def transformer(self, shellcodestring):
-        return shellcodestring.format(shellcode=f'{self.name}({{shellcode}})')
+        return shellcodestring.format(shellcode=f'{{shellcode}} | {self.name}')
