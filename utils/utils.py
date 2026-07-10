@@ -21,7 +21,7 @@ def list_to_c(itemList, name):
     return f'unsigned char *{name}[] = {{{encodedString}}};'
 
 def bytes_to_vba(bytestring, name):
-    arrayString = f'{name} = Array('
+    arrayString = f'Dim {name}() As Variant: {name} = Array('
     for i in range(0, len(bytestring), 100):
         subset = bytestring[i:i+100]
         if len(subset) < 100:
@@ -33,8 +33,7 @@ def bytes_to_vba(bytestring, name):
 
 def str_to_vba(string, name):
 
-    returnString = f'Dim {name} as String: '
-    returnString += f'{name} = '
+    returnString = f'Dim {name} as String: {name} = '
     for i in range(0, len(string), 900):
         substring = string[i:i+900]
         if len(substring) < 900:
@@ -58,3 +57,18 @@ def dict_to_ps1(dictionary, name):
     outString += ';'.join([f'"{key}"={value}' for key, value in dictionary.items()])
     outString += '}'
     return outString
+
+def list_to_vba(itemList, name):
+
+    joinedString = ','.join(itemList)
+
+    returnString = f'Dim {name}() as String: {name} = Split('
+    for i in range(0, len(joinedString), 900):
+        substring = joinedString[i:i+900]
+        if len(substring) < 900:
+            returnString += f'"{substring}",",")\n'
+        else:
+            returnString += f'"{substring}" & _\n'
+
+
+    return returnString

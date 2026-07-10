@@ -31,9 +31,9 @@ python3 staticbypass.py --obfuscator Base64Encode --transformers XOREncrypt,AESE
 | RSAEncrypt    | ❌ | ✅ | ❌ | ❌ |
 | Base64Encode  | ✅ | ✅ | ✅ | ✅ |
 | DictObfuscate | ✅ | ✅ | ✅ | ✅ |
-| IPv4Obfuscate | ✅ | ✅ | ✅ | ❌ |
-| IPv6Obfuscate | ✅ | ✅ | ✅ | ❌ |
-| MACObfuscate  | ✅ | ✅ | ✅ | ❌ |
+| IPv4Obfuscate | ✅ | ✅ | ✅ | ✅ |
+| IPv6Obfuscate | ✅ | ✅ | ✅ | ✅ |
+| MACObfuscate  | ✅ | ✅ | ✅ | ✅ |
 | UUIDEncode    | ✅ | ✅ | ✅ | ❌ |
 | EmojiEncode   | ✅ | ✅ | ✅ | ❌ |
 
