@@ -52,7 +52,7 @@ pip install -r requirements.txt
 | MACObfuscate  | ✅ | ✅ | ✅ | ✅ | Convert bytes into MAC addresses |
 | UUIDEncode    | ✅ | ✅ | ✅ | ❌ | Convert bytes into UUIDv4 strings |
 | EmojiEncode   | ✅ | ✅ | ✅ | ❌ | Convert bytes into emoji |
-| Brainfuck     | ✅ | ❌ | ❌ | ❌ | Convert bytes into a brainfuck string |
+| Brainfuck     | ✅ | ❌ | ❌ | ❌ | Convert bytes into a brainfuck string (Very slow) |
 | Whitespace    | ✅ | ❌ | ❌ | ❌ | Convert bytes into tabs and spaces |
 
 | Template        | C  | C# | PowerShell | VBA | Description |

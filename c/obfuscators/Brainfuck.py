@@ -11,15 +11,15 @@ class Brainfuck:
 
     def codeblock(self):
         return """
-unsigned char * {name}(unsigned char *encoded)
+unsigned char * {name}(const unsigned char *encoded)
 {{
     unsigned char *out = calloc({size}, sizeof(unsigned char));
     int j = 0;
     for (int i =0; i < strlen(encoded); i++){{
-        if (encoded[i] == '>'){{
-            j++;
-        }} else if (encoded[i] == '+'){{
-            out[j] += 1;
+
+        switch(encoded[i]){{
+            case '>': j++; break;
+            case '+': out[j]++; break;
         }}
     }}
 

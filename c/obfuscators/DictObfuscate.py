@@ -27,18 +27,14 @@ class DictObfuscate:
         wordArray = list_to_c([self.dictencode[i] for i in range(0, 256)], 'wordArray')
 
         return """
-unsigned char * {name}(unsigned char* encoded)
+unsigned char * {name}(const unsigned char* encoded)
 {{
-    int count = 0;
-    for (int i = 0; encoded[i] != '\\0'; i++){{
-        if (encoded[i] == ' '){{
-            count += 1;
-        }}
-    }}
-    unsigned char * out = malloc(count + 1);
+    int size = {size};
+    unsigned char *buffer = strdup(encoded);
+    unsigned char * out = malloc(size);
     int i = 0;
     {wordArray}
-    char * currWord = strtok(encoded, " ");
+    char * currWord = strtok(buffer, " ");
     while (currWord != NULL){{
         for (int j = 0; j < 256; j++){{
             if (!strcmp(currWord, wordArray[j])){{
@@ -51,12 +47,13 @@ unsigned char * {name}(unsigned char* encoded)
 
     return out;
 }}
-""".format(name = self.name, wordArray=wordArray)
+""".format(name = self.name, wordArray=wordArray, size=self.size)
 
     def transformer(self, shellcodestring):
         return shellcodestring.format(shellcode=f'{self.name}({{shellcode}})')
 
     def obfuscate(self, decoded):
+        self.size = len(decoded)
         encoded = ''
         for i in range(0, len(decoded) - 1):
             encoded += self.dictencode[decoded[i]] + ' '

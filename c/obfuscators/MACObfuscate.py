@@ -11,8 +11,9 @@ class MACObfuscate:
 
     def codeblock(self):
         return """
-unsigned char * {name}(unsigned char *encoded[], int size)
+unsigned char * {name}(const unsigned char *encoded[])
 {{
+    int size = {size};
     unsigned char *out = malloc(size*6);
     for (int i=0; i<size; i++){{
         char *mutable = strdup(encoded[i]);
@@ -25,7 +26,7 @@ unsigned char * {name}(unsigned char *encoded[], int size)
 
     return out;
 }}
-""".format(name = self.name)
+""".format(name = self.name, size = self.size)
     
     def compilerOptions(self):
         return []
@@ -42,5 +43,4 @@ unsigned char * {name}(unsigned char *encoded[], int size)
         return encoded
 
     def transformer(self, shellcodestring):
-        shellcodestring = f"int size = {self.size};\n" + shellcodestring
-        return shellcodestring.format(shellcode=f'{self.name}({{shellcode}}, size)')
+        return shellcodestring.format(shellcode=f'{self.name}({{shellcode}})')
