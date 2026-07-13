@@ -5,6 +5,13 @@
 python3 staticbypass.py --obfuscator Base64Encode --transformers XOREncrypt,AESEncrypt --shellcode ./shellcode.bin --template processhollow --language cs
 ```
 
+## Features
+- Takes in a raw shellcode file, applies encryptors and obfuscators, formats it, places it into a template, and compiles it
+- Supports C, C#, PowerShell, and VBA
+- Automates placing VBA code into a word document
+- Supports AES, XOR, and RC4 encryption, and Dictionary, UUID, IPv4, IPv6, and MAC address obfuscation
+- Designed to bypass static detection methods
+
 ## WIP
 - Adding more obfuscator support for the different programming languages
 - Adding pre and post compile obfuscations e.g. vba and powershell obfuscation
