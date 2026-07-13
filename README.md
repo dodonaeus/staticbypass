@@ -20,31 +20,48 @@ python3 staticbypass.py --obfuscator Base64Encode --transformers XOREncrypt,AESE
 - Dynamically building help text
 - Refactor code a little bit
 
-## Requirements
-### Windows
-- C# - csc.exe
-- C - mingw64
+## Installation
+### Install pre-reqs
+```
+sudo apt install mono-devel mingw-w64
+```
 
-### Linux
-- C# - mcs
-- C - mingw64
+### Download project
+```
+git clone https://github.com/dodokaicho/staticbypass.git
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
 
-## Currently supported obfuscators and encryptors
-| Obfuscator    | C   | C# | PowerShell | VBA |
-|:-------------:|:---:|:--:|:----------:|:---:|
-| AESEncrypt    | ✅ | ✅ | ✅ | ❌ |
-| XOREncrypt    | ✅ | ✅ | ✅ | ✅ |
-| RC4Encrypt    | ✅ | ✅ | ✅ | ✅ |
-| RSAEncrypt    | ❌ | ✅ | ❌ | ❌ |
-| Base64Encode  | ✅ | ✅ | ✅ | ✅ |
-| DictObfuscate | ✅ | ✅ | ✅ | ✅ |
-| IPv4Obfuscate | ✅ | ✅ | ✅ | ✅ |
-| IPv6Obfuscate | ✅ | ✅ | ✅ | ✅ |
-| MACObfuscate  | ✅ | ✅ | ✅ | ✅ |
-| UUIDEncode    | ✅ | ✅ | ✅ | ❌ |
-| EmojiEncode   | ✅ | ✅ | ✅ | ❌ |
-| Brainfuck     | ✅ | ❌ | ❌ | ❌ |
-| Whitespace    | ✅ | ❌ | ❌ | ❌ |
+## Currently Implemented
+
+| Transformer   | C  | C# | PowerShell | VBA | Description |
+|:-------------:|:--:|:--:|:----------:|:---:|:-----------:|
+| AESEncrypt    | ✅ | ✅ | ✅ | ❌ | AES Encryption |
+| XOREncrypt    | ✅ | ✅ | ✅ | ✅ | XOR Encryption |
+| RC4Encrypt    | ✅ | ✅ | ✅ | ✅ | RC4 Encryption |
+| RSAEncrypt    | ❌ | ✅ | ❌ | ❌ | RSA Encryption |
+
+| Obfuscator    | C   | C# | PowerShell | VBA | Description |
+|:-------------:|:---:|:--:|:----------:|:---:|:-----------:|
+| Base64Encode  | ✅ | ✅ | ✅ | ✅ | Base64 Encode |
+| DictObfuscate | ✅ | ✅ | ✅ | ✅ | Convert bytes into randomly picked dictionary words. Uses wordlists/english.txt |
+| IPv4Obfuscate | ✅ | ✅ | ✅ | ✅ | Convert bytes into IPv4 addresses |
+| IPv6Obfuscate | ✅ | ✅ | ✅ | ✅ | Convert bytes into IPv6 addresses |
+| MACObfuscate  | ✅ | ✅ | ✅ | ✅ | Convert bytes into MAC addresses |
+| UUIDEncode    | ✅ | ✅ | ✅ | ❌ | Convert bytes into UUIDv4 strings |
+| EmojiEncode   | ✅ | ✅ | ✅ | ❌ | Convert bytes into emoji |
+| Brainfuck     | ✅ | ❌ | ❌ | ❌ | Convert bytes into a brainfuck string |
+| Whitespace    | ✅ | ❌ | ❌ | ❌ | Convert bytes into tabs and spaces |
+
+| Template        | C  | C# | PowerShell | VBA | Description |
+|:---------------:|:--:|:--:|:----------:|:---:|:-----------:|
+| shellcoderunner | ✅ | ✅ | ✅ | ✅ | Simple shellcode runner using CreateThread |
+| processhollow   | ✅ | ✅ | ✅ | ✅ | Process hollowing template targeting svchost.exe |
+| processinject   | ✅ | ❌ | ❌ | ❌ | Search for explorer.exe and create a remote thread |
+| bzip2           | ✅ | ❌ | ❌ | ❌ | Process hollowing using legitimate bzip2 code as cover |
+| sqlite3         | ✅ | ❌ | ❌ | ❌ | Process hollowing using legitimate sqlite3 code as cover |
 
 ## Transformer Structure
 
